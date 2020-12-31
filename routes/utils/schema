@@ -1,0 +1,49 @@
+table for_sell
+{
+  "_id": "",
+  "_rev": "",
+  "repo_id": "",
+  "description": null,
+  "name": "",
+  "openGraphImageUrl": "",
+  "url": "",
+  "username": "",
+  "sell": "",
+  "amount": ""
+}
+
+table user
+{
+  "_id": "",
+  "_rev": "",
+  "username": "",
+  "access_token": "\",
+  "token": "",
+  "email": null,
+
+}
+
+table paypal
+{
+  "_id": "",
+  "_rev": "",
+  "github_username": "",
+  "email": "",
+  "amount": 0,
+  "disconnect": 
+}
+
+table owned_repo
+{
+  "_id": "",
+  "_rev": "",
+  "repo_id": "",
+  "description": null,
+  "name": "",
+  "openGraphImageUrl": "",
+  "url": "",
+  "sell": "",
+  "amount": 0,
+  "owner_username": "",
+  "username": ""
+}
