@@ -149,8 +149,12 @@ async function getForSellRepo({ model, token_pass, token }) {
   
 }
 async function getOwnedRepo({ model, token_pass, token }) {
-  const { access_token } = jwt.verify(token, token_pass);
-  const _user=await model.user.findOne({where:{access_token}})
+  let _user
+  if(token){
+    const { access_token } = jwt.verify(token, token_pass);
+   _user=await model.user.findOne({where:{access_token}})
+  }
+  
   if(_user){
     const {username}=_user;
     const ownedRepo=await model.owned_repo.findAll({where:{username}})

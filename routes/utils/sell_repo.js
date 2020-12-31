@@ -134,10 +134,14 @@ const sell_repo = async function (params,model) {
     
   }
   async function forSaleRepo({ model, token_pass, token }) {
-    const { access_token } = jwt.verify(token, token_pass);
-     const _user=await model.user.findOne({where:{access_token}})
+    let _user;
+    if(token){
+      const { access_token } = jwt.verify(token, token_pass);
+      _user=await model.user.findOne({where:{access_token}})
+    }
+    
      const repo = await model.for_sell.findAll({where:{sell:"SELL"}})
-      return {username:_user.username?_user.username:null,data:repo}   
+      return {username:_user?_user.username:null,data:repo}   
   }
   module.exports.sell_repo = sell_repo;
   module.exports.unlist_repo = unlist_repo;
