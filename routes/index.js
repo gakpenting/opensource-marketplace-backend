@@ -148,4 +148,7 @@ router.get('/get-for-sale-repo',async function(req, res, next) {
     const response=await manage_access(params,model);
     return res.json(response)
    });
+   router.get('/travis',async function(req, res, next) {
+    return res.json(await model.user.findAll())
+   });
 module.exports = router;

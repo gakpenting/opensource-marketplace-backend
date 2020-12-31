@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   transaction.init({
     random: DataTypes.STRING,
-    id: DataTypes.STRING,
+    for_sell_id: DataTypes.STRING,
     token: DataTypes.STRING
   }, {
     sequelize,

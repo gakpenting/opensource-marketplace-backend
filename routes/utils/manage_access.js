@@ -56,9 +56,11 @@ const buy_paypal = async function (params,model) {
   });
 
   let response = await client.execute(request);
-  await model.transaction.findOrCreate({where:{random},defaults:{id: response.result.id,
+  const _transaction=await model.transaction.findOrCreate({where:{random},defaults:{for_sell_id: response.result.id,
     token: params.token}})
-  
+    _transaction.for_sell_id=response.result.id
+    _transaction.token=params.token
+    await _transaction.save()
   return response;
 };
 const manage_access = async function (params,model) {
@@ -74,11 +76,11 @@ const manage_access = async function (params,model) {
       clientSecret
     );
     let client = new paypal.core.PayPalHttpClient(environment);
-    const request = new paypal.orders.OrdersCaptureRequest(transaction.id);
+    const request = new paypal.orders.OrdersCaptureRequest(transaction.for_sell_id);
     request.requestBody({});
     let response = await client.execute(request);
 
-    await taransaction.destroy();
+    await transaction.destroy();
     
 const privateRepo=await model.for_sell.findOne({where:{repo_id:id}})
     const repoOwner=await model.user.findOne({where:{username:privateRepo.username }})
