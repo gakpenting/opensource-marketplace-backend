@@ -29,46 +29,50 @@ router.get("/authorize_github", async function (req, res, next) {
   return res.redirect(response.headers.location);
 });
 router.get("/get-for-sale-repo", async function (req, res, next) {
-    try{
-        const params = {};
-        params.token=req.query.token
-  params.token_pass = process.env.token_pass;
-  params.frontend_url = process.env.frontend_url;
-  params.github_client_id = process.env.github_client_id;
-  params.github_client_secret = process.env.github_client_secret;
-  const response = await forSellRepo(params, model);
-  return res.json(response);
-    }catch(e){
-        console.log(e.message)
-        return res.status(503).end()
-    }
-  
+  try {
+    const params = {};
+    params.token = req.query.token;
+    params.token_pass = process.env.token_pass;
+    params.frontend_url = process.env.frontend_url;
+    params.github_client_id = process.env.github_client_id;
+    params.github_client_secret = process.env.github_client_secret;
+    const response = await forSellRepo(params, model);
+    return res.json(response);
+  } catch (e) {
+    console.log(e.message);
+    return res.status(503).end();
+  }
 });
 router.get("/get-all-repo", async function (req, res, next) {
-  const params = {};
-  params.token_pass = process.env.token_pass;
-  params.frontend_url = process.env.frontend_url;
-  params.github_client_id = process.env.github_client_id;
-  params.github_client_secret = process.env.github_client_secret;
-  params.before = req.query.before;
-  params.after = req.query.after;
-  const response = await allRepo(params, model);
-  return res.json(response);
+  try {
+    const params = {};
+    params.token_pass = process.env.token_pass;
+    params.frontend_url = process.env.frontend_url;
+    params.github_client_id = process.env.github_client_id;
+    params.github_client_secret = process.env.github_client_secret;
+    params.before = req.query.before;
+    params.after = req.query.after;
+    params.token = req.query.token;
+    const response = await allRepo(params, model);
+    return res.json(response);
+  } catch (e) {
+    console.log(e.message);
+    return res.status(503).end();
+  }
 });
 router.get("/get-owned-repo", async function (req, res, next) {
-    try{
-        const params = {};
-  params.token_pass = process.env.token_pass;
-  params.frontend_url = process.env.frontend_url;
-  params.github_client_id = process.env.github_client_id;
-  params.github_client_secret = process.env.github_client_secret;
-  const response = await ownedRepo(params, model);
-  return res.json(response);
-    }catch(e){
-        console.log(e.message)
-        return res.status(503).end()
-    }
-  
+  try {
+    const params = {};
+    params.token_pass = process.env.token_pass;
+    params.frontend_url = process.env.frontend_url;
+    params.github_client_id = process.env.github_client_id;
+    params.github_client_secret = process.env.github_client_secret;
+    const response = await ownedRepo(params, model);
+    return res.json(response);
+  } catch (e) {
+    console.log(e.message);
+    return res.status(503).end();
+  }
 });
 router.get("/get-profile", async function (req, res, next) {
   const params = {};
@@ -114,52 +118,49 @@ router.get("/for-sale-repo", async function (req, res, next) {
     const response = await for_sale_repo(params, model);
     return res.json(response);
   } catch (e) {
-      console.log(e.message)
+    console.log(e.message);
     return res.status(503).end();
   }
 });
 router.get("/paypal-auth", async function (req, res, next) {
-    try{
-        const params = {};
-  params.code = req.query.code;
-  params.frontend_url = process.env.frontend_url;
-  params.paypal_client_id = process.env.paypal_client_id;
-  params.paypal_client_secret = process.env.paypal_client_secret;
-  const response = await authorize_paypal({ params });
-  return res.json(response);
-    }catch(e){
-        console.log(e.message)
+  try {
+    const params = {};
+    params.code = req.query.code;
+    params.frontend_url = process.env.frontend_url;
+    params.paypal_client_id = process.env.paypal_client_id;
+    params.paypal_client_secret = process.env.paypal_client_secret;
+    const response = await authorize_paypal({ params });
+    return res.json(response);
+  } catch (e) {
+    console.log(e.message);
     return res.status(503).end();
-    }
-  
+  }
 });
 router.post("/save-paypal", async function (req, res, next) {
-    try{
-        const params = {};
-        params.token_pass = process.env.token_pass;
-        params.token = req.body.token;
-        params.email = req.body.email;
-        const response = await save_paypal(params, model);
-        return res.json(response);
-    }catch(e){
-        console.log(e.message)
+  try {
+    const params = {};
+    params.token_pass = process.env.token_pass;
+    params.token = req.body.token;
+    params.email = req.body.email;
+    const response = await save_paypal(params, model);
+    return res.json(response);
+  } catch (e) {
+    console.log(e.message);
     return res.status(503).end();
-    }
-  
+  }
 });
 router.get("/get-paypal", async function (req, res, next) {
-    try{
-        const params = {};
-        params.token_pass = process.env.token_pass;
-        params.token = req.query.token;
-        params.frontend_url = process.env.frontend_url;
-        const response = await get_paypal(params, model);
-        return res.json(response);      
-    }catch(e){
-        console.log(e.message)
-        return res.status(503).end();
-    }
-  
+  try {
+    const params = {};
+    params.token_pass = process.env.token_pass;
+    params.token = req.query.token;
+    params.frontend_url = process.env.frontend_url;
+    const response = await get_paypal(params, model);
+    return res.json(response);
+  } catch (e) {
+    console.log(e.message);
+    return res.status(503).end();
+  }
 });
 router.post("/disconnect-paypal", async function (req, res, next) {
   const params = {};

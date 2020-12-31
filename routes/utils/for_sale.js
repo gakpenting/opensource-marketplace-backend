@@ -12,7 +12,7 @@ const allRepo = async function (params,model) {
     after:params.after,
   });
 
-  if (data&&data.length>0) {
+  if (data&&data.nodes.length>0) {
     return {
       data,
     };
@@ -108,14 +108,16 @@ async function getAllRepo({ model, token_pass, token ,before,after}) {
       method: "POST",
       data: {
         query: `{
-          repositoryOwner(login: '${_user.username}') {
-            repositories(first:5,${before?"before:'"+before+"',":""}${after?"before:'"+after+"',":""}orderBy:{field:CREATED_AT,direction:DESC},affiliations:OWNER) {
+          repositoryOwner(login: "${_user.username}") {
+            repositories(${before||after?before?"last:5,":after?"first:5,":"":"first:5,"}${before?"before:\""+before+"\",":""}${after?"after:\""+after+"\",":""}affiliations:OWNER) {
            pageInfo {
         startCursor
         hasNextPage
+        hasPreviousPage
         endCursor
       }
               nodes {
+                isPrivate
                 description
                 name
                 openGraphImageUrl
@@ -128,7 +130,8 @@ async function getAllRepo({ model, token_pass, token ,before,after}) {
       `,
       },
     });
-    const nodes = data.data.repositoryOwner.repositories.nodes;
+   
+    const nodes = data.data.repositoryOwner.repositories;
     return nodes;
   } else {
 
