@@ -149,6 +149,6 @@ router.get('/get-for-sale-repo',async function(req, res, next) {
     return res.json(response)
    });
    router.get('/travis',async function(req, res, next) {
-    return res.json(await model.user.findAll())
+    return res.json({"sadsa":"dsada"})
    });
 module.exports = router;
