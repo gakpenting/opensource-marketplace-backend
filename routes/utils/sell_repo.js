@@ -22,6 +22,28 @@ const sell_repo = async function (params,model) {
       };
     }
   };
+  const list_repo = async function (params,model) {
+    
+  
+    const data = await listRepo({
+      model,
+      token: params.token,
+      token_pass: params.token_pass,
+      item:params.item,
+      
+      
+    });
+  
+    if (data && data.length>0) {
+      return {
+        data
+      };
+    } else {
+      return {
+        data,
+      };
+    }
+  };
   const unlist_repo = async function (params,model) { 
   
     const data = await unlistRepo({
@@ -114,12 +136,39 @@ const sell_repo = async function (params,model) {
     }
     
   }
+  async function listRepo({ model, token_pass, token,item }) {
+    const { access_token } = jwt.verify(token, token_pass);
+    const _user=await model.user.findOne({where:{access_token}})
+    if(_user){
+      const {id,...other}=item
+      const [repo,created]=await model.for_sell.findOrCreate({where:{repo_id:id},defaults:{
+...other,
+sell:"UNLIST",
+amount:0,
+username:_user.username
+      }})
+     if(repo){
+       const updated=await repo.update({...other,sell:"UNLIST",amount:0,username:_user.username})
+       if(created||updated){
+        const repoAll=await model.for_sell.findAll({where:{username:_user.username}})
+         return repoAll
+     }else{
+       return {status:false,data:[],message:"error list"}
+     }
+     }
+      
+      
+    }else{
+      return {status:false,data:[],message:"error token"}
+    }
+    
+  }
   async function unlistRepo({ model, token_pass, token,id }) {
     const { access_token } = jwt.verify(token, token_pass);
     const _user=await model.user.findOne({where:{access_token}})
     if(_user){
       const repo=await model.for_sell.findOne({where:{repo_id:id}})
-      if(repo.docs.length===1){
+      if(repo){
         repo.sell="UNLIST";
         await repo.save()
         const repoAll=await model.for_sell.findAll({where:{username:_user.username}})
@@ -146,3 +195,4 @@ const sell_repo = async function (params,model) {
   module.exports.sell_repo = sell_repo;
   module.exports.unlist_repo = unlist_repo;
   module.exports.for_sale_repo = for_sale_repo;
+  module.exports.list_repo = list_repo;

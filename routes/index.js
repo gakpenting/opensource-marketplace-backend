@@ -8,8 +8,9 @@ const {
   allRepo,
   ownedRepo,
   profile,
+  
 } = require("./utils/for_sale");
-const { sell_repo, unlist_repo, for_sale_repo } = require("./utils/sell_repo");
+const { sell_repo, unlist_repo, for_sale_repo, list_repo} = require("./utils/sell_repo");
 const {
   authorize_paypal,
   save_paypal,
@@ -198,9 +199,19 @@ router.get(
     return res.json(response);
   }
 );
-router.get("/travis", async function (req, res, next) {
-  const user = await model.user.findAll();
-  return res.json(user);
+router.post("/list-repo", async function (req, res, next) {
+  try{
+    const params = {};
+  params.item = req.body.item;
+  params.token = req.query.token;
+  params.token_pass = process.env.token_pass;
+  const response = await list_repo(params, model);
+  return res.json(response);
+  }catch(e){
+    console.log(e.message)
+    return res.status(503).end()
+  }
+  
 });
 router.get("/", async function (req, res, next) {
   return res.send("im healthy");
