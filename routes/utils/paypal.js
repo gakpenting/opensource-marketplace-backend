@@ -75,7 +75,12 @@ async function saveEmail({ token_pass,token, model, email }) {
       amount:0,
       disconnect:false
     }})
-    return created;
+    if(!created){
+      return true
+    }else{
+      return created;
+    }
+    
     
   } else {
     return false
