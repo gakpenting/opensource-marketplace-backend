@@ -19,9 +19,10 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     openGraphImageUrl: DataTypes.STRING,
     url: DataTypes.STRING,
+    isPrivate: DataTypes.BOOLEAN,
     username: DataTypes.STRING,
     sell: DataTypes.STRING,
-    amount: DataTypes.INTEGER
+    amount: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'for_sell',

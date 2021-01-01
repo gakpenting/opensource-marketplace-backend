@@ -144,7 +144,7 @@ async function getForSellRepo({ model, token_pass, token }) {
   
   if(_user){
     const {username}=_user;
-    const forSell=await model.for_sell.findOne({where:{username}})
+    const forSell=await model.for_sell.findAll({where:{username}})
     return forSell;
   }else{
     return []
