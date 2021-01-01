@@ -114,7 +114,7 @@ async function deletePaypal({ model, token_pass, token }) {
   const { access_token } = jwt.verify(token, token_pass);
   const _user=await model.user.findOne({where:{access_token}})
   
-await model.for_sale.update({
+await model.for_sell.update({
 sell: "UNLIST",
 }, {
   where: {
