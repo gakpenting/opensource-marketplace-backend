@@ -10,7 +10,7 @@ const {
   profile,
   
 } = require("./utils/for_sale");
-const { sell_repo, unlist_repo, for_sale_repo, list_repo} = require("./utils/sell_repo");
+const { sell_repo, unlist_repo, for_sale_repo, list_repo,repo_detail} = require("./utils/sell_repo");
 const {
   authorize_paypal,
   save_paypal,
@@ -65,10 +65,9 @@ router.get("/get-owned-repo", async function (req, res, next) {
   try {
     const params = {};
     params.token_pass = process.env.token_pass;
+    params.token = req.query.token;
     params.frontend_url = process.env.frontend_url;
-    params.github_client_id = process.env.github_client_id;
-    params.github_client_secret = process.env.github_client_secret;
-    const response = await ownedRepo(params, model);
+     const response = await ownedRepo(params, model);
     return res.json(response);
   } catch (e) {
     console.log(e.message);
@@ -184,6 +183,13 @@ router.post("/buy-paypal", async function (req, res, next) {
   const response = await buy_paypal(params, model);
   return res.json(response);
 });
+router.post("/repo-detail", async function (req, res, next) {
+  const params = {};
+  params.name=req.body.name
+  params.username=req.body.username
+  const response = await repo_detail(params, model);
+  return res.json(response);
+});
 router.get(
   "/manage-access/:token/:id/:random",
   async function (req, res, next) {
@@ -196,7 +202,7 @@ router.get(
     params.paypal_client_id = process.env.paypal_client_id;
     params.paypal_client_secret = process.env.paypal_client_secret;
     const response = await manage_access(params, model);
-    return res.json(response);
+    return res.redirect(response.headers.location);
   }
 );
 router.post("/list-repo", async function (req, res, next) {

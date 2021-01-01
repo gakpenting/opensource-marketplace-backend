@@ -76,6 +76,8 @@ async function saveEmail({ token_pass,token, model, email }) {
       disconnect:false
     }})
     if(!created){
+      _paypal.disconnect=false;
+      await _paypal.save()
       return true
     }else{
       return created;

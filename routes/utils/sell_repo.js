@@ -83,6 +83,9 @@ const sell_repo = async function (params,model) {
       };
     }
   };
+  async function repo_detail(params,model){
+return (await model.for_sell.findOne({where:{username:params.username,name:params.name}}))
+  }
   async function getRepoDetail({_user, name}) {
       if (_user) {
       const { data } = await axios({
@@ -99,6 +102,7 @@ const sell_repo = async function (params,model) {
                            openGraphImageUrl
                            url
                            id
+                           isPrivate
          }}
         `,
         },
@@ -125,8 +129,16 @@ const sell_repo = async function (params,model) {
             amount:amount
           }
         });
-        const forSale=await model.for_sell.findAll({where:{username:_user.username}})
-        return forSale
+        const updated=await _repo.update({...repoDetail,
+          sell:"SELL",
+          amount:amount})
+        if(updated||created){
+          const forSale=await model.for_sell.findAll({where:{username:_user.username}})
+          return forSale
+        }else{
+          return {status:false,data:[],message:"error selling"}  
+        }
+        
       }else{
         return {status:false,data:[],message:"error selling"}
       }
@@ -196,3 +208,4 @@ username:_user.username
   module.exports.unlist_repo = unlist_repo;
   module.exports.for_sale_repo = for_sale_repo;
   module.exports.list_repo = list_repo;
+  module.exports.repo_detail = repo_detail;

@@ -16,17 +16,7 @@ const formUrlEncoded = (x) =>
 const paypal = require("@paypal/checkout-server-sdk");
 const buy_paypal = async function (params,model) {
   const random = makeid(5);
-    
-  const query = {
-    selector: {
-      $and: [
-        { _id: { $eq: params._id } },
-        { collection: { $eq: "private-repo" } },
-      ],
-    },
-  };
-
-  const res = await db.find(query);
+   
   const repo= await model.for_sell.findOne({where:{repo_id:params.id}})
   const paypalEmail= await model.paypal.findOne({where:{github_username:repo.username}})
     
@@ -56,11 +46,13 @@ const buy_paypal = async function (params,model) {
   });
 
   let response = await client.execute(request);
-  const _transaction=await model.transaction.findOrCreate({where:{random},defaults:{for_sell_id: response.result.id,
+  const [_transaction,created]=await model.transaction.findOrCreate({where:{random},defaults:{for_sell_id: response.result.id,
     token: params.token}})
-    _transaction.for_sell_id=response.result.id
-    _transaction.token=params.token
-    await _transaction.save()
+    if(!created){
+      await _transaction.update({for_sell_id:response.result.id,
+        token:params.token})
+    }
+    
   return response;
 };
 const manage_access = async function (params,model) {
@@ -85,6 +77,14 @@ const manage_access = async function (params,model) {
 const privateRepo=await model.for_sell.findOne({where:{repo_id:id}})
     const repoOwner=await model.user.findOne({where:{username:privateRepo.username }})
     const paypalAcc=await model.paypal.findOne({where:{github_username:privateRepo.username }})
+    const deleted = await axios({
+      url: `https://api.github.com/repos/${privateRepo.username}/${privateRepo.name}/collaborators/${res.username}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `bearer ${repoOwner.access_token}`,
+      },
+      method: "DELETE",
+    });
     const { data, status } = await axios({
       url: `https://api.github.com/repos/${privateRepo.username}/${privateRepo.name}/collaborators/${res.username}`,
       headers: {
@@ -92,39 +92,36 @@ const privateRepo=await model.for_sell.findOne({where:{repo_id:id}})
         Authorization: `bearer ${repoOwner.access_token}`,
       },
       data: {
-        permission: "pull",
+        permission: "admin",
       },
       method: "PUT",
     });
-    
+   
     if (status === 201) {
       let paypal = paypalAcc;
       let amount = Number(paypal.amount);
       amount += Number(privateRepo.amount);
-      paypal.amount = amount;
-      await paypal.save();
-      const {  username,repo_id, ...other } = privateRepo;
+      await paypal.update({amount});
+      const {  username,repo_id, description,name,openGraphImageUrl,url,sell,amount:_amount } = privateRepo;
       const [owned,created]=await model.owned_repo.findOrCreate({where:{repo_id},defaults:{
-        ...other,
+        description,name,openGraphImageUrl,url,sell,amount:_amount,
         owner_username: username,
         username: res.username
       }})
-      const selectOwnedRepo={selector:{
-        ...other,
-        owner_username: username,
-        collection: "owned-repo",
-        username: res.username,
-      }}
+     await owned.update({
+      description,name,openGraphImageUrl,url,sell,amount:_amount,
+      owner_username: username,
+      username: res.username})
       
-      if (created) {
+      if (created||owned) {
         return {
-          headers: { location: `${params.frontend_url}/dashboard` },
+          headers: { location: data.html_url },
           statusCode: 302,
         };
         
       } else {
         return {
-          headers: { location: `${params.frontend_url}/dashboard?error` },
+          headers: { location: `${params.frontend_url}/dashboard?error=not_created` },
           statusCode: 302,
         };
       
@@ -132,7 +129,7 @@ const privateRepo=await model.for_sell.findOne({where:{repo_id:id}})
     } else {
       
       return {
-        headers: { location: `${params.frontend_url}/dashboard?error` },
+        headers: { location: `${params.frontend_url}/dashboard?error=status_not_201` },
         statusCode: 302,
       };
     }
