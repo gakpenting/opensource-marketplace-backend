@@ -75,7 +75,12 @@ async function saveEmail({ token_pass,token, model, email }) {
       amount:0,
       disconnect:false
     }})
-    return created;
+    if(!created){
+      return true
+    }else{
+      return created;
+    }
+    
     
   } else {
     return false
@@ -114,7 +119,7 @@ async function deletePaypal({ model, token_pass, token }) {
   const { access_token } = jwt.verify(token, token_pass);
   const _user=await model.user.findOne({where:{access_token}})
   
-await model.for_sale.update({
+await model.for_sell.update({
 sell: "UNLIST",
 }, {
   where: {
