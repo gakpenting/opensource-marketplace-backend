@@ -130,8 +130,8 @@ router.get("/paypal-auth", async function (req, res, next) {
     params.frontend_url = process.env.frontend_url;
     params.paypal_client_id = process.env.paypal_client_id;
     params.paypal_client_secret = process.env.paypal_client_secret;
-    const response = await authorize_paypal({ params });
-    return res.json(response);
+    const response = await authorize_paypal(params);
+    return res.redirect(response.headers.location);
   } catch (e) {
     console.log(e.message);
     return res.status(503).end();
