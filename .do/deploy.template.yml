@@ -1,5 +1,5 @@
 spec:
-  name: opensource-marketplace-backend
+  name: opensource-marketplace
   services:
   - name: opensource-marketplace-backend
     environment_slug: node-js
@@ -8,9 +8,7 @@ spec:
       repo_clone_url: https://github.com/spiritbro1/opensource-marketplace-backend
     github:
       deploy_on_push: true
-    run_command: 
-      npx sequelize-cli db:migrate
-      yarn start
+    run_command: npx sequelize-cli db:migrate && yarn start
     envs:
     - key: github_client_id
       value: "your_github_client_id"
@@ -43,5 +41,5 @@ spec:
     http_port: 4000
     routes:
     - path: /api
-    databases:
+  databases:
     - name: db
