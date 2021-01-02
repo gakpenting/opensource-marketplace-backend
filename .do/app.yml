@@ -1,0 +1,47 @@
+spec:
+  name: opensource-marketplace-backend
+  services:
+  - name: opensource-marketplace-backend
+    environment_slug: node-js
+    git:
+      branch: main
+      repo_clone_url: https://github.com/spiritbro1/opensource-marketplace-backend
+    github:
+      deploy_on_push: true
+    run_command: 
+      npx sequelize-cli db:migrate
+      yarn start
+    envs:
+    - key: github_client_id
+      value: "your_github_client_id"
+    - key: github_client_secret
+      value: "your_github_client_secret"
+    - key: paypal_client_id
+      value: "your_paypal_client_id"
+    - key: paypal_client_secret
+      value: "your_paypal_client_secret"
+    - key: token_pass
+      value: "your secret token_pass"
+    - key: return_url
+      value: ${APP_URL}/api/manage-access
+    - key: cancel_url
+      value: ${APP_URL}/dashboard?error=paypal_cancel
+    - key: DB_USERNAME
+      value: ${db.USERNAME}
+    - key: DB_PASSWORD
+      value: ${db.PASSWORD}
+    - key: DB_NAME
+      value: ${db.DATABASE}
+    - key: DB_HOST
+      value: ${db.HOSTNAME}
+    - key: NODE_ENV
+      value: production
+    - key: DB_PORT
+      value: ${db.PORT}
+    - key: frontend_url
+      value: ${APP_URL}
+    http_port: 4000
+    routes:
+    - path: /api
+    databases:
+    - name: db
